@@ -2,3 +2,5 @@ python-dotenv~=1.0.0
 scrapfly-sdk[scrapy]
 pytesseract
 Pillow
+flask
+flask_cors

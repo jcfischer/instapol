@@ -1,0 +1,50 @@
+.container {
+  width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.date {
+  font-weight: bold;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.column {
+  flex: 1;
+  margin-right: 1em;
+}
+
+.image {
+  width: 400px;
+  height: 400px;
+  margin-bottom: 1em;
+}
+
+.caption {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 1em;
+}
+
+.text {
+  margin-bottom: 1em;
+}
+
+.buttons {
+  margin-top: 1em;
+}
+
+.buttons button {
+  display: block;
+  margin-bottom: 1em;
+}

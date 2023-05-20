@@ -10,7 +10,7 @@ from scrapfly import ScrapeConfig, ScrapflyClient, ScrapeApiResponse
 
 
 def scrape_user(username: str, session: ScrapflyClient):
-    file_path = 'data/' + username + ".json"
+    file_path = 'data_1/' + username + ".json"
     if os.path.exists(file_path):
         print("already downloaded", username)
         with open(file_path, "r") as file:
@@ -30,7 +30,7 @@ def scrape_user(username: str, session: ScrapflyClient):
             json.dump(data["data"]["user"], file)
 
         """create directory for posts"""
-        directory_path = "data/" + username
+        directory_path = "data_1/" + username
 
         # Create the directory if it doesn't exist
         if not os.path.exists(directory_path):
@@ -57,7 +57,7 @@ def scrape_user_posts(user_id: str, session: ScrapflyClient, cursor, page_size=1
 
         id = post_data["id"]
         # print(id, post_data['edge_media_to_caption'], dt.isoformat())
-        filename = 'data/' + username + "/" + dt.isoformat() + "-" + id + ".json"
+        filename = 'data_1/' + username + "/" + dt.isoformat() + "-" + id + ".json"
         with open(filename, "w") as file:
             json.dump(post_data, file)
 
