@@ -1,11 +1,11 @@
-from flask import Flask, render_template, request
-from flask_cors import CORS
+from flask import Flask, render_template, request, redirect, url_for
 import requests
 import os
 import sqlite3
 
+DATABASE = '../data_new/zoe.db'
+
 app = Flask(__name__)
-CORS(app)
 
 
 def cache_image(id, url):
@@ -24,7 +24,7 @@ def cache_image(id, url):
 @app.route('/')
 def show_posts():
     # Connect to the SQLite database
-    conn = sqlite3.connect('../data/zoe.db')
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     # Retrieve the filter parameters from the request
@@ -36,7 +36,7 @@ def show_posts():
     per_page = 10
     print("page", page)
     # Construct the SQL query with the filters
-    query = "SELECT id, username, display_url, caption, ocr_caption, comment_count, timestamp FROM posts"
+    query = "SELECT id, username, display_url, caption, ocr_caption, comment_count, timestamp FROM posts ORDER by timestamp"
     where_clause = construct_where_clause(filters)
     if where_clause:
         query += " WHERE " + where_clause
@@ -72,7 +72,7 @@ def show_posts():
 @app.route('/post/<post_id>')
 def show_post_details(post_id):
     # Connect to the SQLite database
-    conn = sqlite3.connect('../data/zoe.db')
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     # Retrieve the post details for the given post_id
@@ -89,6 +89,76 @@ def show_post_details(post_id):
     return render_template('post_detail.html', post=post)
 
 
+@app.route('/post/<post_id>', methods=['POST'])
+def edit_post_details(post_id):
+    # Connect to the SQLite database
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    referendum = request.form.get('referendum', '')
+    direct_camp = request.form.get('direct_camp', '')
+    strategy = request.form.get('strategy', '')
+    info_struct = request.form.get('info_struct', '')
+    info_posit = request.form.get('info_posit', '')
+    neg_strat = request.form.get('neg_strat', '')
+    neg_focus = request.form.get('neg_focus', '')
+    neg_inciv = request.form.get('neg_inciv', '')
+    twostep_strat = request.form.get('twostep_strat', '')
+    neg_target = request.form.get('neg_target', '')
+
+    # Execute a query to update the "dat" column with the formatted value
+    cursor.execute("""
+        UPDATE posts
+        SET dat = strftime('%d%m%y', timestamp)
+        WHERE id = ?
+    """, (post_id,))
+    # Retrieve the post details for the given post_id
+
+    cursor.execute("""
+            UPDATE posts
+            SET referendum = :referendum,
+            direct_camp = :direct_camp,
+            strategy = :strategy,
+            info_struct = :info_struct, 
+            info_posit = :info_posit,
+            neg_strat = :neg_strat,
+            neg_focus = :neg_focus,
+            neg_inciv = :neg_inciv,
+            twostep_strat = :twostep_strat,
+            neg_targ =  :neg_target
+            WHERE id = :key
+        """, {'referendum': referendum,
+              'direct_camp': direct_camp,
+              'strategy': strategy,
+              'info_struct': info_struct,
+              'info_posit': info_posit,
+              'neg_strat': neg_strat,
+              'neg_focus': neg_focus,
+              'neg_inciv': neg_inciv,
+              'twostep_strat': twostep_strat,
+              'neg_target': neg_target,
+              'key': post_id})
+
+    cursor.execute("""
+        SELECT *
+        FROM posts
+        WHERE referendum IS NULL
+        ORDER BY timestamp
+        LIMIT 1
+    """)
+    result = cursor.fetchone()
+    next_id = result[0]
+    print("next entry:", next_id)
+
+    # Close the database connection
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+    # redirect to the next post that is not processed yet
+    return redirect(url_for('show_post_details', post_id=next_id))
+
+
 def construct_where_clause(filters):
     conditions = []
     for column, value in filters.items():
@@ -98,4 +168,4 @@ def construct_where_clause(filters):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(port=8000, debug=True)

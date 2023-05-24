@@ -5,12 +5,16 @@ from urllib.parse import quote
 from dotenv import load_dotenv
 import os
 import json
+import random
+import time
 
 from scrapfly import ScrapeConfig, ScrapflyClient, ScrapeApiResponse
 
+DATA_PATH = "data_new/"
+
 
 def scrape_user(username: str, session: ScrapflyClient):
-    file_path = 'data_1/' + username + ".json"
+    file_path = DATA_PATH + username + ".json"
     if os.path.exists(file_path):
         print("already downloaded", username)
         with open(file_path, "r") as file:
@@ -30,7 +34,7 @@ def scrape_user(username: str, session: ScrapflyClient):
             json.dump(data["data"]["user"], file)
 
         """create directory for posts"""
-        directory_path = "data_1/" + username
+        directory_path = DATA_PATH + username
 
         # Create the directory if it doesn't exist
         if not os.path.exists(directory_path):
@@ -38,7 +42,7 @@ def scrape_user(username: str, session: ScrapflyClient):
         return data["data"]["user"]
 
 
-def scrape_user_posts(user_id: str, session: ScrapflyClient, cursor, page_size=12):
+def scrape_user_posts(username: str, user_id: str, session: ScrapflyClient, cursor, page_size=12):
     """scrape user's post data"""
     print("starting from", cursor)
     base_url = "https://www.instagram.com/graphql/query/?query_hash=e769aa130647d2354c40ea6a439bfc08&variables="
@@ -57,7 +61,7 @@ def scrape_user_posts(user_id: str, session: ScrapflyClient, cursor, page_size=1
 
         id = post_data["id"]
         # print(id, post_data['edge_media_to_caption'], dt.isoformat())
-        filename = 'data_1/' + username + "/" + dt.isoformat() + "-" + id + ".json"
+        filename = DATA_PATH + username + "/" + dt.isoformat() + "-" + id + ".json"
         with open(filename, "w") as file:
             json.dump(post_data, file)
 
@@ -74,7 +78,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     # Add the username option
-    parser.add_argument("-u", "--username", help="The username")
+    parser.add_argument("-u", "--username", help="The usernames (separated by commas")
 
     # Add the cursor option
     parser.add_argument("-c", "--cursor", help="The cursor")
@@ -94,8 +98,11 @@ if __name__ == "__main__":
 
     with ScrapflyClient(key=scraplify_key, max_concurrency=2) as session:
 
-        result_user = scrape_user(username, session)
-        cursor = scrape_user_posts(result_user["id"], session, cursor)
-        while cursor:
-            cursor = scrape_user_posts(result_user["id"], session, cursor)
-            print("received", cursor)
+        names_list = username.split(',')
+        for name in names_list:
+            result_user = scrape_user(name, session)
+            cursor = scrape_user_posts(name, result_user["id"], session, cursor)
+            while cursor:
+                time.sleep(random.uniform(1, 5))
+                cursor = scrape_user_posts(name, result_user["id"], session, cursor)
+                print("received", cursor)
