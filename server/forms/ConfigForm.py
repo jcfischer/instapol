@@ -76,6 +76,8 @@ neg_target_choices = [
     (56, '- GLP'),
     (90, 'Other'),
 ]
+
+
 class CodingForm(FlaskForm):
     referendum = SelectField('referendum', coerce=int, validators=None, choices=referendum_choices)
     direct_camp = RadioField('direct_camp', choices=yes_no_choices)

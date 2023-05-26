@@ -105,7 +105,17 @@ def show_post_details(post_id):
     form = CodingForm(obj=post)
     form.referendum.default = post['referendum']
     form.direct_camp.default = post['direct_camp']
+    form.strategy.default = post['strategy']
+    form.info_struct.default = post['info_struct']
+    form.info_posit.default = post['info_posit']
+    form.neg_strat.default = post['neg_strat']
+    form.neg_focus.default = post['neg_focus']
+    form.neg_inciv.default = post['neg_inciv']
+    form.twostep_strat.default = post['twostep_strat']
+    form.neg_targ.default = post['neg_targ']
 
+
+    form.process()
     print(form.referendum.default)
     # Render the template to display the post details
     return render_template('post_detail.html', post=post, form=form)
@@ -127,7 +137,7 @@ def edit_post_details(post_id):
     neg_focus = request.form.get('neg_focus', '')
     neg_inciv = request.form.get('neg_inciv', '')
     twostep_strat = request.form.get('twostep_strat', '')
-    neg_target = request.form.get('neg_target', '')
+    neg_targ = request.form.get('neg_targ', '')
 
     print("post:", referendum)
 
@@ -150,7 +160,7 @@ def edit_post_details(post_id):
             neg_focus = :neg_focus,
             neg_inciv = :neg_inciv,
             twostep_strat = :twostep_strat,
-            neg_targ =  :neg_target
+            neg_targ =  :neg_targ
             WHERE id = :key
         """, {'referendum': referendum,
               'direct_camp': direct_camp,
@@ -161,7 +171,7 @@ def edit_post_details(post_id):
               'neg_focus': neg_focus,
               'neg_inciv': neg_inciv,
               'twostep_strat': twostep_strat,
-              'neg_target': neg_target,
+              'neg_targ': neg_targ,
               'key': post_id})
 
     cursor.execute("""
