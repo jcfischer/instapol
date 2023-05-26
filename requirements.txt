@@ -4,3 +4,5 @@ pytesseract
 Pillow
 flask
 flask_cors
+flask_httpauth
+Werkzeug

@@ -1,4 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
+from flask_httpauth import HTTPBasicAuth
+from werkzeug.security import generate_password_hash, check_password_hash
+from dotenv import load_dotenv
 import requests
 import os
 import sqlite3
@@ -6,22 +9,32 @@ import sqlite3
 DATABASE = '../data_new/zoe.db'
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Access the value of the secret key
+password = os.getenv("PASSWORD")
 
 
-def cache_image(id, url):
-    image_path = f"static/images/{id}.jpg"  # Assuming the images folder exists
-    if os.path.exists(image_path):
-        print(image_path)
-    else:
-        response = requests.get(url)
-        if response.status_code == 200:
-            # Save the image to a local directory
-            with open(image_path, 'wb') as image_file:
-                image_file.write(response.content)
+users = {
+    "zoe": generate_password_hash(password),
+    "jcf": generate_password_hash(password)
+}
+
+@auth.verify_password
+def verify_password(username, password):
+    if username in users and \
+            check_password_hash(users.get(username), password):
+        return username
+
+
 
 
 # Route for displaying the list of posts
 @app.route('/')
+@auth.login_required
 def show_posts():
     # Connect to the SQLite database
     conn = sqlite3.connect(DATABASE)
@@ -70,6 +83,7 @@ def show_posts():
 
 # Route for displaying the details of a specific post
 @app.route('/post/<post_id>')
+@auth.login_required
 def show_post_details(post_id):
     # Connect to the SQLite database
     conn = sqlite3.connect(DATABASE)
@@ -78,9 +92,6 @@ def show_post_details(post_id):
     # Retrieve the post details for the given post_id
     cursor.execute("SELECT * FROM posts WHERE id = ?", (post_id,))
     post = cursor.fetchone()
-    image_url = post[2]
-    print(image_url)
-    cache_image(post_id, image_url)
     # Close the database connection
     cursor.close()
     conn.close()
@@ -90,6 +101,7 @@ def show_post_details(post_id):
 
 
 @app.route('/post/<post_id>', methods=['POST'])
+@auth.login_required
 def edit_post_details(post_id):
     # Connect to the SQLite database
     conn = sqlite3.connect(DATABASE)
@@ -168,4 +180,5 @@ def construct_where_clause(filters):
 
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=True)
+
+    app.run(port=8000, debug=True, host="0.0.0.0")
