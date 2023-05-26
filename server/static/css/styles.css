@@ -15,10 +15,7 @@
 
 .content {
   display: flex;
-
 }
-
-
 
 .wide-column {
     flex-grow: 1;

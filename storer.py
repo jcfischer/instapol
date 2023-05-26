@@ -128,6 +128,8 @@ for name in names_list:
                         {'post_id': post_id, 'username': name, 'display_url': display_url, 'caption': caption,
                          'ocr_caption': ocr_text, 'comment_count': comment_count, 'timestamp': datetime_string,
                          'dat': dat, 'polparty': pol_party})
+                else:
+                    print(post_id)
             except (ValueError, KeyError, IndexError):
                 print(f"Error processing JSON file: {file_path}")
 
