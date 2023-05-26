@@ -46,11 +46,12 @@
   margin-bottom: 1em;
 }
 
-.buttons {
-  margin-top: 1em;
+fieldset ul {
+    padding: 0;
+    margin: 0;
 }
 
-.buttons button {
-  display: block;
-  margin-bottom: 1em;
+fieldset ul li {
+    list-style-type: none;
 }
+

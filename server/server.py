@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_wtf import FlaskForm
-from wtforms import StringField, RadioField, SelectField
-from wtforms.validators import DataRequired
+
 from dotenv import load_dotenv
-import requests
 import os
 import sqlite3
+
+from forms.ConfigForm import CodingForm
 
 DATABASE = '../data_new/zoe.db'
 
@@ -21,23 +20,10 @@ load_dotenv()
 password = os.getenv("PASSWORD")
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
-
 users = {
     "zoe": generate_password_hash(password),
     "jcf": generate_password_hash(password)
 }
-
-referendum_choices = [
-    ('0', 'Kein Referendum'),
-    ('1', '25.09.22 - Zusatzfinanzierung AHV')
-]
-
-class MyForm(FlaskForm):
-    referendum = SelectField('referendum', validators=None, choices=referendum_choices)
-
-
-class CodingForm(FlaskForm):
-    referendum = SelectField('referendum', referendum_choices)
 
 
 def get_db_connection():
@@ -45,13 +31,12 @@ def get_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+
 @auth.verify_password
 def verify_password(username, password):
     if username in users and \
             check_password_hash(users.get(username), password):
         return username
-
-
 
 
 # Route for displaying the list of posts
@@ -117,7 +102,11 @@ def show_post_details(post_id):
     # Close the database connection
     cursor.close()
     conn.close()
-    form = MyForm()
+    form = CodingForm(obj=post)
+    form.referendum.default = post['referendum']
+    form.direct_camp.default = post['direct_camp']
+
+    print(form.referendum.default)
     # Render the template to display the post details
     return render_template('post_detail.html', post=post, form=form)
 
@@ -139,6 +128,8 @@ def edit_post_details(post_id):
     neg_inciv = request.form.get('neg_inciv', '')
     twostep_strat = request.form.get('twostep_strat', '')
     neg_target = request.form.get('neg_target', '')
+
+    print("post:", referendum)
 
     # Execute a query to update the "dat" column with the formatted value
     cursor.execute("""
@@ -202,5 +193,4 @@ def construct_where_clause(filters):
 
 
 if __name__ == '__main__':
-
     app.run(port=8000, debug=True, host="0.0.0.0")

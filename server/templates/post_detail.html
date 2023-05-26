@@ -5,13 +5,9 @@
     <title>Post Details</title>
 </head>
 <body>
-<form method="POST" action="/bla">
-    {{ form.csrf_token }}
-    {{ form.referendum.label }} {{ form.referendum }}
-    <input type="submit" value="Go">
-</form>
 
 <form method="POST" action="/post/{{ post['id'] }}">
+    {{ form.csrf_token }}
     <div class="content">
         <div class="narrow-column">
             <div class="header">
@@ -24,102 +20,49 @@
         </div>
         <div class="narrow-column">
 
-            <select name="referendum">
-                <option value="0" selected>Kein Referendum</option>
-                <option value="1">25.09.22 - Zusatzfianzierung AHV</option>
-                <option value="2"> - Änderung Bundesgesetz AHV</option>
-                <option value="3"> - Verrechnungssteuer</option>
-                <option value="4">15.05.22 - Filmproduktion</option>
-                <option value="5"> - Transplantation</option>
-                <option value="6"> - Schengen Besitzstand</option>
-                <option value="7">13.02.22 - Stempelabgaben</option>
-                <option value="8"> - Mediengesetz</option>
-                <option value="9">28.11.21 - Covid 19 Gesetz</option>
-                <option value="10">26.09.21 - Ehe für alle</option>
-                <option value="11">13.06.21 - Covid 19 Gesetz</option>
-                <option value="12"> - CO2 Gesetz</option>
-                <option value="13"> - Bekämpfung Terrorismus</option>
-                <option value="14">07.03.21 - E-ID Gesetz</option>
-                <option value="15"> - Indonesien</option>
-                <option value="16">27.09.20 - Jagdgesetz</option>
-                <option value="17"> - Kinderdrittbetreuungskosten</option>
-                <option value="18"> - Vaterschaftsurlaub</option>
-                <option value="19"> - Kampfflugzeuge</option>
-                <option value="20">09.02.20 - Straf / Militärgesetz</option>
-            </select>
-            <input type="submit" value="Submit">
+            {{ form.referendum }}
+            {{ form.submit }}
             <fieldset>
                 <legend>Direction - Policy Change</legend>
-                <input type="radio" name="direct_camp" value="1"> Yes<br>
-                <input type="radio" name="direct_camp" value="2"> No<br>
+                {{ form.direct_camp }}
             </fieldset>
             <fieldset>
                 <legend>Strategy</legend>
-                <input type="radio" name="strategy" value="0"> No Strategy found<br>
-                <input type="radio" name="strategy" value="1"> Information strategies<br>
-                <input type="radio" name="strategy" value="2"> Moralization<br>
-                <input type="radio" name="strategy" value="3"> Negative Campaigning<br>
-                <input type="radio" name="strategy" value="4"> Encouragment<br>
+                {{ form.strategy }}
             </fieldset>
             <fieldset>
                 <legend>Structural Information</legend>
-                <input type="radio" name="info_struct" value="0"> Not present<br>
-                <input type="radio" name="info_struct" value="1"> Present<br>
+                {{ form.info_struct }}
             </fieldset>
             <fieldset>
                 <legend>Pos on policy issues / debates</legend>
-                <input type="radio" name="info_posit" value="0"> Not present<br>
-                <input type="radio" name="info_posit" value="1"> Present<br>
+                {{ form.info_posit }}
             </fieldset>
             <fieldset>
                 <legend>Acclaim/Attack</legend>
-                <input type="radio" name="neg_strat" value="0"> Not present<br>
-                <input type="radio" name="neg_strat" value="1"> Acclaim<br>
-                <input type="radio" name="neg_strat" value="2"> Attack<br>
+                {{ form.neg_strat }}
             </fieldset>
             <fieldset>
                 <legend>Focus</legend>
-                <input type="radio" name="neg_focus" value="0"> Not clear<br>
-                <input type="radio" name="neg_focus" value="1"> Issues or Positions<br>
-                <input type="radio" name="neg_focus" value="2"> Qualities / Character<br>
-                <input type="radio" name="neg_focus" value="3"> Qualities AND Character<br>
+                {{ form.neg_focus }}
             </fieldset>
             <fieldset>
                 <legend>Incivility</legend>
-                <input type="radio" name="neg_inciv" value="0"> Not present<br>
-                <input type="radio" name="neg_inciv" value="1"> Present<br>
+                {{ form.neg_inciv }}
             </fieldset>
             <fieldset>
                 <legend>Encouragment</legend>
-                <input type="radio" name="twostep_strat" value="0"> Not present<br>
-                <input type="radio" name="twostep_strat" value="1"> Present<br>
+                {{ form.twostep_strat }}
             </fieldset>
         </div>
         <div class="narrow-column">
             <fieldset>
                 <legend>Target</legend>
-                <input type="radio" name="neg_target" value="10"> Author of post<br>
-                <input type="radio" name="neg_target" value="20"> Government<br>
-                <input type="radio" name="neg_target" value="30"> Opposition<br>
-                <input type="radio" name="neg_target" value="40"> Specific Party<br>
-                <input type="radio" name="neg_target" value="41"> - SVP<br>
-                <input type="radio" name="neg_target" value="42"> - SP<br>
-                <input type="radio" name="neg_target" value="43"> - FDP<br>
-                <input type="radio" name="neg_target" value="44"> - Mitte<br>
-                <input type="radio" name="neg_target" value="45"> - Grüne<br>
-                <input type="radio" name="neg_target" value="46"> - GLP<br>
-                <input type="radio" name="neg_target" value="50"> Specific Person<br>
-                <input type="radio" name="neg_target" value="51"> - SVP<br>
-                <input type="radio" name="neg_target" value="52"> - SP<br>
-                <input type="radio" name="neg_target" value="53"> - FDP<br>
-                <input type="radio" name="neg_target" value="54"> - Mitte<br>
-                <input type="radio" name="neg_target" value="55"> - Grüne<br>
-                <input type="radio" name="neg_target" value="56"> - GLP<br>
-                <input type="radio" name="neg_target" value="90"> Other<br>
+                {{ form.neg_targ }}
             </fieldset>
 
 
-            <input type="submit" value="Submit">
+            {{ form.submit }}
         </div>
 
 
