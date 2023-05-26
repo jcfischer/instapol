@@ -51,10 +51,10 @@ def show_posts():
 
     # Pagination parameters
     page = int(request.args.get('page', 1))
-    per_page = 10
+    per_page = 40
     print("page", page)
     # Construct the SQL query with the filters
-    query = "SELECT id, username, display_url, caption, ocr_caption, comment_count, timestamp FROM posts ORDER by timestamp"
+    query = "SELECT id, username, caption, referendum, timestamp FROM posts ORDER by timestamp"
     where_clause = construct_where_clause(filters)
     if where_clause:
         query += " WHERE " + where_clause
