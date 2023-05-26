@@ -1,14 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from dotenv import load_dotenv
 import os
 import sqlite3
-
+import csv
 from forms.ConfigForm import CodingForm
-
-
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -113,7 +111,6 @@ def show_post_details(post_id):
     form.twostep_strat.default = post['twostep_strat']
     form.neg_targ.default = post['neg_targ']
 
-
     form.process()
 
     cursor.execute("SELECT count(*) FROM posts WHERE referendum IS NULL")
@@ -124,6 +121,34 @@ def show_post_details(post_id):
     print(remaining[0])
     # Render the template to display the post details
     return render_template('post_detail.html', post=post, form=form, remaining=remaining[0])
+
+
+@app.route('/download_csv', methods=['GET'])
+def download_csv():
+    # Connect to the SQLite database
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # Execute a SELECT query to fetch data from the database
+    cursor.execute("SELECT * FROM posts ORDER BY timestamp")
+
+    # Fetch all rows from the query result
+    rows = cursor.fetchall()
+
+    # Define the CSV file path
+    csv_file_path = 'data.csv'
+
+    # Write the data to a CSV file
+    with open(csv_file_path, 'w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow([i[0] for i in cursor.description])  # Write header row
+        writer.writerows(rows)  # Write data rows
+
+    # Close the database connection
+    conn.close()
+
+    # Send the CSV file as a downloadable response
+    return send_file(csv_file_path, as_attachment=True)
 
 
 @app.route('/post/<post_id>', methods=['POST'])
