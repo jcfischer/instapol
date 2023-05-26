@@ -51,7 +51,7 @@ def show_posts():
 
     # Pagination parameters
     page = int(request.args.get('page', 1))
-    per_page = 40
+    per_page = 30
     print("page", page)
     # Construct the SQL query with the filters
     query = "SELECT id, username, caption, referendum, timestamp FROM posts ORDER by timestamp"
@@ -169,14 +169,6 @@ def edit_post_details(post_id):
     twostep_strat = request.form.get('twostep_strat', '')
     neg_targ = request.form.get('neg_targ', '')
 
-    print("post:", referendum)
-
-    # Execute a query to update the "dat" column with the formatted value
-    cursor.execute("""
-        UPDATE posts
-        SET dat = strftime('%d%m%y', timestamp)
-        WHERE id = ?
-    """, (post_id,))
     # Retrieve the post details for the given post_id
 
     cursor.execute("""

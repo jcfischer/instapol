@@ -1,3 +1,7 @@
+* {
+    font-family: Helvetica, sans-serif;
+
+}
 .container {
   width: 900px;
   margin: 0 auto;
@@ -55,3 +59,48 @@ fieldset ul li {
     list-style-type: none;
 }
 
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 4px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Pagination Styles */
+.pagination {
+    margin-top: 20px;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 8px 8px;
+    text-decoration: none;
+    color: #000;
+    border: 1px solid #ddd;
+    transition: background-color 0.3s;
+}
+
+.pagination a:hover {
+    background-color: #ddd;
+}
+
+.pagination .active {
+    background-color: #4CAF50;
+        padding: 8px 8px;
+    text-decoration: none;
+    color: #000;
+    border: 1px solid #ddd;
+    color: white;
+}
