@@ -8,7 +8,7 @@ import sqlite3
 
 from forms.ConfigForm import CodingForm
 
-DATABASE = '../data_new/zoe.db'
+
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -19,7 +19,7 @@ load_dotenv()
 # Access the value of the secret key
 password = os.getenv("PASSWORD")
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
-
+DATABASE = os.getenv('DATABASE')
 users = {
     "zoe": generate_password_hash(password),
     "jcf": generate_password_hash(password)
