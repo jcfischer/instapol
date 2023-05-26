@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_httpauth import HTTPBasicAuth
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_wtf import FlaskForm
+from wtforms import StringField, RadioField, SelectField
+from wtforms.validators import DataRequired
 from dotenv import load_dotenv
 import requests
 import os
@@ -16,12 +19,31 @@ load_dotenv()
 
 # Access the value of the secret key
 password = os.getenv("PASSWORD")
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 
 users = {
     "zoe": generate_password_hash(password),
     "jcf": generate_password_hash(password)
 }
+
+referendum_choices = [
+    ('0', 'Kein Referendum'),
+    ('1', '25.09.22 - Zusatzfinanzierung AHV')
+]
+
+class MyForm(FlaskForm):
+    referendum = SelectField('referendum', validators=None, choices=referendum_choices)
+
+
+class CodingForm(FlaskForm):
+    referendum = SelectField('referendum', referendum_choices)
+
+
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 @auth.verify_password
 def verify_password(username, password):
@@ -37,7 +59,7 @@ def verify_password(username, password):
 @auth.login_required
 def show_posts():
     # Connect to the SQLite database
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # Retrieve the filter parameters from the request
@@ -86,7 +108,7 @@ def show_posts():
 @auth.login_required
 def show_post_details(post_id):
     # Connect to the SQLite database
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     # Retrieve the post details for the given post_id
@@ -95,16 +117,16 @@ def show_post_details(post_id):
     # Close the database connection
     cursor.close()
     conn.close()
-
+    form = MyForm()
     # Render the template to display the post details
-    return render_template('post_detail.html', post=post)
+    return render_template('post_detail.html', post=post, form=form)
 
 
 @app.route('/post/<post_id>', methods=['POST'])
 @auth.login_required
 def edit_post_details(post_id):
     # Connect to the SQLite database
-    conn = sqlite3.connect(DATABASE)
+    conn = get_db_connection()
     cursor = conn.cursor()
 
     referendum = request.form.get('referendum', '')
