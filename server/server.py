@@ -100,8 +100,7 @@ def show_post_details(post_id):
     cursor.execute("SELECT * FROM posts WHERE id = ?", (post_id,))
     post = cursor.fetchone()
     # Close the database connection
-    cursor.close()
-    conn.close()
+
     form = CodingForm(obj=post)
     form.referendum.default = post['referendum']
     form.direct_camp.default = post['direct_camp']
@@ -116,9 +115,15 @@ def show_post_details(post_id):
 
 
     form.process()
-    print(form.referendum.default)
+
+    cursor.execute("SELECT count(*) FROM posts WHERE referendum IS NULL")
+    remaining = cursor.fetchone()
+
+    cursor.close()
+    conn.close()
+    print(remaining[0])
     # Render the template to display the post details
-    return render_template('post_detail.html', post=post, form=form)
+    return render_template('post_detail.html', post=post, form=form, remaining=remaining[0])
 
 
 @app.route('/post/<post_id>', methods=['POST'])
