@@ -24,7 +24,7 @@ referendum_choices = [
     ('19', ' - Kampfflugzeuge'),
     ('20', '09.02.20 - Straf / Militärgesetz'),
     ('21', '19.05.19 - Steuerreform / AHV Finanzierung'),
-    ('22', ' - Weiterentw. Schengen Besitztstan')
+    ('22', ' - Waffengesetz')
 ]
 
 yes_no_choices = [
