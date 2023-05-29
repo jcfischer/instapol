@@ -225,4 +225,4 @@ def construct_where_clause(filters):
 
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=True, host="0.0.0.0")
+    app.run(port=8000, debug=False, host="0.0.0.0")
