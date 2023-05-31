@@ -99,6 +99,18 @@ def show_post_details(post_id):
     post = cursor.fetchone()
     # Close the database connection
 
+    # get previous and next posts
+    cursor.execute(
+        "SELECT * FROM posts WHERE referendum > 1 AND timestamp > (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1",
+        (post_id,))
+    next_post = cursor.fetchone()
+
+    cursor.execute(
+        "SELECT * FROM posts WHERE referendum > 1 AND timestamp < (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp DESC LIMIT 1",
+        (post_id,))
+    previous_post = cursor.fetchone()
+
+
     form = CodingForm(obj=post)
     form.referendum.default = post['referendum']
     form.direct_camp.default = post['direct_camp']
@@ -120,7 +132,8 @@ def show_post_details(post_id):
     conn.close()
     print(remaining[0])
     # Render the template to display the post details
-    return render_template('post_detail.html', post=post, form=form, remaining=remaining[0])
+    return render_template('post_detail.html', post=post, form=form, remaining=remaining[0], next_post=next_post,
+                           previous_post=previous_post)
 
 
 @app.route('/download_csv', methods=['GET'])
@@ -196,16 +209,22 @@ def edit_post_details(post_id):
               'neg_targ': neg_targ,
               'key': post_id})
 
-    cursor.execute("""
-        SELECT *
-        FROM posts
-        WHERE referendum IS NULL
-        ORDER BY timestamp
-        LIMIT 1
-    """)
-    result = cursor.fetchone()
-    next_id = result[0]
-    print("next entry:", next_id)
+    # cursor.execute("""
+    #     SELECT *
+    #     FROM posts
+    #     WHERE referendum IS NULL
+    #     ORDER BY timestamp
+    #     LIMIT 1
+    # """)
+    # result = cursor.fetchone()
+    # next_id = result[0]
+    # print("next entry:", next_id)
+
+    cursor.execute(
+        "SELECT * FROM posts WHERE referendum > 1 AND timestamp > (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1",
+        (post_id,))
+    next_post = cursor.fetchone()
+    next_id = next_post[0]
 
     # Close the database connection
     cursor.close()

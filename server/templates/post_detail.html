@@ -99,6 +99,12 @@
 
 
 </form>
-<a href="/">Zurück zur Übersicht</a>
+
+<a href="{{ url_for('show_post_details', post_id=previous_post.id) }}"> <- </a>
+<a href="/">Back</a>
+
+<a href="{{ url_for('show_post_details', post_id=next_post.id) }}"> -> </a>
+
+
 </body>
 </html>
