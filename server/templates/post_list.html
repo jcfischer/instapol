@@ -13,6 +13,11 @@
         <th>Account</th>
         <th>Caption</th>
         <th>Referendum</th>
+        <th>Care</th>
+        <th>Fair</th>
+        <th>loyal</th>
+        <th>auth</th>
+        <th>sanct</th>
     </tr>
 
     {% for post in posts %}
@@ -21,6 +26,11 @@
         <td>{{ post['username'] }}</td>
         <td>{{ post['caption'][:80] }}</td>
         <td>{{ post['referendum'] }}</td>
+        <td>{{ post['moral_care'] }}</td>
+        <td>{{ post['moral_fair'] }}</td>
+        <td>{{ post['moral_loyal'] }}</td>
+        <td>{{ post['moral_auth'] }}</td>
+        <td>{{ post['moral_sanct'] }}</td>
     </tr>
 
     {% endfor %}

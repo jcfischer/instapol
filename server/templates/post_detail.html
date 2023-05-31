@@ -17,6 +17,32 @@
             <img src="/static/images/{{ post['id'] }}.jpg" alt="Image" class="image">
             <div class="caption"> {{ post['caption'] }}</div>
             <div class="text">{{ post['ocr_caption'] }}</div>
+            <table>
+                <tr>
+                    <th>Foundation</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>moral_care</td>
+                    <td>{{ post['moral_care'] }}</td>
+                </tr>
+                <tr>
+                    <td>moral_fair</td>
+                    <td>{{ post['moral_fair'] }}</td>
+                </tr>
+                <tr>
+                    <td>moral_loyal</td>
+                    <td>{{ post['moral_loyal'] }}</td>
+                </tr>
+                <tr>
+                    <td>moral_auth</td>
+                    <td>{{ post['moral_auth'] }}</td>
+                </tr>
+                <tr>
+                    <td>moral_sanct</td>
+                    <td>{{ post['moral_sanct'] }}</td>
+                </tr>
+            </table>
         </div>
         <div class="narrow-column">
 

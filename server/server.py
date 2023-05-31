@@ -54,7 +54,7 @@ def show_posts():
     per_page = 30
     print("page", page)
     # Construct the SQL query with the filters
-    query = "SELECT id, username, caption, referendum, timestamp FROM posts ORDER by timestamp"
+    query = "SELECT * FROM posts where referendum > 1 ORDER by timestamp"
     where_clause = construct_where_clause(filters)
     if where_clause:
         query += " WHERE " + where_clause
@@ -225,4 +225,4 @@ def construct_where_clause(filters):
 
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=False, host="0.0.0.0")
+    app.run(port=8000, debug=True, host="0.0.0.0")
