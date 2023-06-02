@@ -79,6 +79,23 @@ neg_target_choices = [
     (90, 'Other'),
 ]
 
+person_choices = [
+    (0, 'No mention'),
+    (10, 'Mention of Party'),
+    (20, 'Mention of Politician'),
+    (21, 'SVP - Rösti / Chiesa'),
+    (22, 'SP - Levrat / Wermuth/Meyer'),
+    (23, 'FDP - Gössi / Burkhart'),
+    (24, "Mitte - Pfister"),
+    (25, 'GPS - Glättli'),
+    (30, 'Mention of Party & Politician'),
+]
+
+person_priv_choices = [
+    (1, 'Political Context'),
+    (2, 'Personal Context')
+]
+
 
 class CodingForm(FlaskForm):
     referendum = SelectField('referendum', coerce=int, validators=None, choices=referendum_choices)
@@ -91,5 +108,7 @@ class CodingForm(FlaskForm):
     neg_inciv = RadioField('neg_inciv', choices=present_choices)
     twostep_strat = RadioField('twostep_strat', choices=present_choices)
     neg_targ = RadioField('neg_targ', choices=neg_target_choices)
+    person_indiv = RadioField('person_indiv', choices=person_choices)
+    person_priv = RadioField('person_priv', choices=person_priv_choices)
 
     submit = SubmitField('Submit')

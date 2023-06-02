@@ -47,8 +47,10 @@
         <div class="narrow-column">
 
             {{ form.referendum }}
+            {{ post['ref_dep'] }}
+            <br/>
             {{ form.submit }}
-            Noch: {{ remaining }}
+
             <fieldset>
                 <legend>Direction - Policy Change</legend>
                 {{ form.direct_camp }}
@@ -86,6 +88,14 @@
             <fieldset>
                 <legend>Target</legend>
                 {{ form.neg_targ }}
+            </fieldset>
+            <fieldset>
+                <legend>Person-Indiv</legend>
+                {{ form.person_indiv }}
+            </fieldset>
+            <fieldset>
+                <legend>Person-priv</legend>
+                {{ form.person_priv }}
             </fieldset>
 
 

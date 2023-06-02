@@ -122,6 +122,8 @@ def show_post_details(post_id):
     form.neg_inciv.default = post['neg_inciv']
     form.twostep_strat.default = post['twostep_strat']
     form.neg_targ.default = post['neg_targ']
+    form.person_indiv.default = post['person_indiv']
+    form.person_priv.default = post['person_priv']
 
     form.process()
 
@@ -181,6 +183,8 @@ def edit_post_details(post_id):
     neg_inciv = request.form.get('neg_inciv', '')
     twostep_strat = request.form.get('twostep_strat', '')
     neg_targ = request.form.get('neg_targ', '')
+    person_priv = request.form.get('person_priv', '')
+    person_indiv = request.form.get('person_indiv', '')
 
     # Retrieve the post details for the given post_id
 
@@ -195,7 +199,9 @@ def edit_post_details(post_id):
             neg_focus = :neg_focus,
             neg_inciv = :neg_inciv,
             twostep_strat = :twostep_strat,
-            neg_targ =  :neg_targ
+            neg_targ =  :neg_targ,
+            person_priv = :person_priv,
+            person_indiv = :person_indiv
             WHERE id = :key
         """, {'referendum': referendum,
               'direct_camp': direct_camp,
@@ -207,6 +213,8 @@ def edit_post_details(post_id):
               'neg_inciv': neg_inciv,
               'twostep_strat': twostep_strat,
               'neg_targ': neg_targ,
+              'person_priv': person_priv,
+              'person_indiv': person_indiv,
               'key': post_id})
 
     # cursor.execute("""
