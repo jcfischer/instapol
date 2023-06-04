@@ -65,7 +65,7 @@ parties = {'svpch': 1,
            'fdp_schweiz': 3,
            'mitte_centre': 4,
            'gruenech': 5,
-           'glpzh': 6}
+           'grunliberale': 6}
 
 
 def ocr_image(image_url, id):
@@ -130,8 +130,9 @@ for name in names_list:
                          'dat': dat, 'polparty': pol_party})
                 else:
                     print(post_id)
-            except (ValueError, KeyError, IndexError):
+            except Exception as e:
                 print(f"Error processing JSON file: {file_path}")
+                print(str(e))
 
             conn.commit()
 # Commit changes and close the connection

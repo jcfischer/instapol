@@ -2,7 +2,9 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, RadioField, SelectField, SubmitField
 
 referendum_choices = [
+
     ('0', 'Kein Referendum'),
+    ('99', 'noch nicht gemacht'),
     ('1', '25.09.22 - Zusatzfinanzierung AHV'),
     ('2', ' - Änderung Bundesgesetz AHV'),
     ('3', ' - Verrechnungssteuer'),
@@ -111,4 +113,9 @@ class CodingForm(FlaskForm):
     person_indiv = RadioField('person_indiv', choices=person_choices)
     person_priv = RadioField('person_priv', choices=person_priv_choices)
 
+    submit = SubmitField('Submit')
+
+
+class IndexForm(FlaskForm):
+    referendum = SelectField('referendum', coerce=int, validators=None, choices=referendum_choices)
     submit = SubmitField('Submit')

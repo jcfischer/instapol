@@ -8,6 +8,8 @@
 
 <form method="POST" action="/post/{{ post['id'] }}">
     {{ form.csrf_token }}
+    <input type="hidden" name="username_filter" value="{{ username_filter }}">
+    <input type="hidden" name="referendum_filter" value="{{ referendum_filter }}">
     <div class="content">
         <div class="narrow-column">
             <div class="header">
@@ -110,10 +112,11 @@
 
 </form>
 
-<a href="{{ url_for('show_post_details', post_id=previous_post.id) }}"> <- </a>
-<a href="/">Back</a>
+<a href="{{ url_for('show_post_details', post_id=previous_post.id, username=username_filter, referendum=referendum_filter) }}"> <- </a>
 
-<a href="{{ url_for('show_post_details', post_id=next_post.id) }}"> -> </a>
+<a href="{{ url_for('index', username=username_filter, referendum=referendum_filter, page=current_page) }}">Back</a>
+
+<a href="{{ url_for('show_post_details', post_id=next_post.id, username=username_filter, referendum=referendum_filter) }}"> -> </a>
 
 
 </body>

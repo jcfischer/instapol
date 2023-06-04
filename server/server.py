@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import os
 import sqlite3
 import csv
-from forms.ConfigForm import CodingForm
+from forms.ConfigForm import CodingForm, IndexForm
 
 app = Flask(__name__)
 auth = HTTPBasicAuth()
@@ -40,7 +40,25 @@ def verify_password(username, password):
 # Route for displaying the list of posts
 @app.route('/')
 @auth.login_required
-def show_posts():
+def index():
+    # Get filter values from the query parameters
+    username_filter = request.args.get('username')
+    referendum_filter = request.args.get('referendum')
+
+    # Build the SQL query based on the filter values
+    query = "SELECT * FROM posts"
+    conditions = []
+    if username_filter:
+        conditions.append("username = '{}'".format(username_filter))
+    if referendum_filter:
+        if referendum_filter == '99':
+            conditions.append("referendum is NULL")
+        else:
+            conditions.append("referendum = '{}'".format(referendum_filter))
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+
+    print(query)
     # Connect to the SQLite database
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -53,15 +71,11 @@ def show_posts():
     page = int(request.args.get('page', 1))
     per_page = 30
     print("page", page)
-    # Construct the SQL query with the filters
-    query = "SELECT * FROM posts where referendum > 1 ORDER by timestamp"
-    where_clause = construct_where_clause(filters)
-    if where_clause:
-        query += " WHERE " + where_clause
 
     # Count the total number of posts
     print(query)
     count_query = f"SELECT COUNT(*) FROM ({query}) AS count_query"
+    print(count_query)
     cursor.execute(count_query)
     total_count = cursor.fetchone()[0]
 
@@ -69,11 +83,18 @@ def show_posts():
     offset = (page - 1) * per_page
 
     # Add pagination to the SQL query
-    query += f" LIMIT {per_page} OFFSET {offset}"
+    query += f" ORDER BY timestamp LIMIT {per_page} OFFSET {offset}"
 
     # Execute the SQL query
     cursor.execute(query)
     posts = cursor.fetchall()
+
+    # Build the SQL query for unique usernames
+    query = "SELECT DISTINCT username FROM posts"
+
+    # Execute the query and fetch all rows
+    cursor.execute(query)
+    usernames = [row[0] for row in cursor.fetchall()]
 
     # Close the database connection
     cursor.close()
@@ -82,14 +103,44 @@ def show_posts():
     # Calculate the total number of pages
     total_pages = (total_count + per_page - 1) // per_page
 
+    form = IndexForm()
+    form.referendum.default = referendum_filter
+
+    form.process()
     # Render the template to display the filtered list of posts with pagination
-    return render_template('post_list.html', posts=posts, total_pages=total_pages, current_page=page, request=request)
+    return render_template('post_list.html', posts=posts, total_pages=total_pages, current_page=page, request=request,
+                           username_filter=username_filter, referendum_filter=referendum_filter, usernames=usernames,
+                           form=form)
 
 
 # Route for displaying the details of a specific post
 @app.route('/post/<post_id>')
 @auth.login_required
 def show_post_details(post_id):
+
+    username_filter = request.args.get('username')
+    referendum_filter = request.args.get('referendum')
+    current_page = request.args.get('page')
+
+    # Build the SQL query based on the filter values
+    query = "SELECT * FROM posts"
+    conditions = []
+    if username_filter:
+        conditions.append("username = '{}'".format(username_filter))
+    if referendum_filter:
+        if referendum_filter == '99':
+            conditions.append("referendum is NULL")
+        else:
+            conditions.append("referendum = '{}'".format(referendum_filter))
+
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+        next_query = query + " AND timestamp > (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1"
+        prev_query = query + " AND timestamp < (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1"
+    else:
+        next_query = query + " WHERE timestamp > (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1"
+        prev_query = query + " WHERE timestamp < (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1"
+
     # Connect to the SQLite database
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -100,16 +151,26 @@ def show_post_details(post_id):
     # Close the database connection
 
     # get previous and next posts
-    cursor.execute(
-        "SELECT * FROM posts WHERE referendum > 1 AND timestamp > (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1",
-        (post_id,))
-    next_post = cursor.fetchone()
+    try:
+        print(next_query)
+        cursor.execute(
+            next_query,
+            (post_id,))
+        next_post = cursor.fetchone()
+    except Exception as e:
+        # Exception handling code
+        print("An exception occurred:", str(e))
+        next_post = None
 
-    cursor.execute(
-        "SELECT * FROM posts WHERE referendum > 1 AND timestamp < (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp DESC LIMIT 1",
-        (post_id,))
-    previous_post = cursor.fetchone()
-
+    try:
+        cursor.execute(
+            prev_query,
+            (post_id,))
+        previous_post = cursor.fetchone()
+    except Exception as e:
+        # Exception handling code
+        print("An exception occurred:", str(e))
+        previous_post = None
 
     form = CodingForm(obj=post)
     form.referendum.default = post['referendum']
@@ -135,7 +196,8 @@ def show_post_details(post_id):
     print(remaining[0])
     # Render the template to display the post details
     return render_template('post_detail.html', post=post, form=form, remaining=remaining[0], next_post=next_post,
-                           previous_post=previous_post)
+                           previous_post=previous_post, username_filter=username_filter, referendum_filter=referendum_filter,
+                           current_page=current_page)
 
 
 @app.route('/download_csv', methods=['GET'])
@@ -169,6 +231,26 @@ def download_csv():
 @app.route('/post/<post_id>', methods=['POST'])
 @auth.login_required
 def edit_post_details(post_id):
+    username_filter = request.form.get('username_filter', '')
+    referendum_filter = request.form.get('referendum_filter', '')
+
+    print(username_filter, referendum_filter)
+    # Build the SQL query based on the filter values
+    query = "SELECT * FROM posts"
+    conditions = []
+    if username_filter:
+        conditions.append("username = '{}'".format(username_filter))
+    if referendum_filter:
+        if referendum_filter == '99':
+            conditions.append("referendum is NULL")
+        else:
+            conditions.append("referendum = '{}'".format(referendum_filter))
+    conditions.append("timestamp > (SELECT timestamp FROM posts WHERE id = ?)")
+    if conditions:
+        query += " WHERE " + " AND ".join(conditions)
+
+    next_query = query + " ORDER BY timestamp ASC LIMIT 1"
+    print(next_query)
     # Connect to the SQLite database
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -217,6 +299,7 @@ def edit_post_details(post_id):
               'person_indiv': person_indiv,
               'key': post_id})
 
+    conn.commit()
     # cursor.execute("""
     #     SELECT *
     #     FROM posts
@@ -227,15 +310,20 @@ def edit_post_details(post_id):
     # result = cursor.fetchone()
     # next_id = result[0]
     # print("next entry:", next_id)
+    try:
+        cursor.execute(
+            next_query,
+            (post_id,))
+        next_post = cursor.fetchone()
+        next_id = next_post[0]
 
-    cursor.execute(
-        "SELECT * FROM posts WHERE referendum > 1 AND timestamp > (SELECT timestamp FROM posts WHERE id = ?) ORDER BY timestamp ASC LIMIT 1",
-        (post_id,))
-    next_post = cursor.fetchone()
-    next_id = next_post[0]
+        # Close the database connection
+        cursor.close()
+    except Exception as e:
+        # Exception handling code
+        print("An exception occurred:", str(e))
+        next_id = post_id
 
-    # Close the database connection
-    cursor.close()
     conn.commit()
     conn.close()
 
