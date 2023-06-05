@@ -51,10 +51,8 @@ def index():
     if username_filter:
         conditions.append("username = '{}'".format(username_filter))
     if referendum_filter:
-        if referendum_filter == '99':
-            conditions.append("referendum is NULL")
-        else:
-            conditions.append("referendum = '{}'".format(referendum_filter))
+        conditions = add_referendum(conditions, referendum_filter)
+
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
 
@@ -128,10 +126,7 @@ def show_post_details(post_id):
     if username_filter:
         conditions.append("username = '{}'".format(username_filter))
     if referendum_filter:
-        if referendum_filter == '99':
-            conditions.append("referendum is NULL")
-        else:
-            conditions.append("referendum = '{}'".format(referendum_filter))
+        conditions = add_referendum(conditions, referendum_filter)
 
     if conditions:
         query += " WHERE " + " AND ".join(conditions)
@@ -200,6 +195,16 @@ def show_post_details(post_id):
                            current_page=current_page)
 
 
+def add_referendum(conditions, referendum_filter):
+    if referendum_filter == '99':
+        conditions.append("referendum is NULL")
+    elif referendum_filter == '98':
+        conditions.append("referendum > 0")
+    else:
+        conditions.append("referendum = '{}'".format(referendum_filter))
+    return conditions
+
+
 @app.route('/download_csv', methods=['GET'])
 def download_csv():
     # Connect to the SQLite database
@@ -241,10 +246,8 @@ def edit_post_details(post_id):
     if username_filter:
         conditions.append("username = '{}'".format(username_filter))
     if referendum_filter:
-        if referendum_filter == '99':
-            conditions.append("referendum is NULL")
-        else:
-            conditions.append("referendum = '{}'".format(referendum_filter))
+        conditions = add_referendum(conditions, referendum_filter)
+
     conditions.append("timestamp > (SELECT timestamp FROM posts WHERE id = ?)")
     if conditions:
         query += " WHERE " + " AND ".join(conditions)

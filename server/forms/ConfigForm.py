@@ -5,6 +5,7 @@ referendum_choices = [
 
     ('0', 'Kein Referendum'),
     ('99', 'noch nicht gemacht'),
+    ('98', 'Alle Referenden'),
     ('1', '25.09.22 - Zusatzfinanzierung AHV'),
     ('2', ' - Änderung Bundesgesetz AHV'),
     ('3', ' - Verrechnungssteuer'),
