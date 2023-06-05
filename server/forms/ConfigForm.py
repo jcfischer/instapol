@@ -91,6 +91,7 @@ person_choices = [
     (23, 'FDP - Gössi / Burkhart'),
     (24, "Mitte - Pfister"),
     (25, 'GPS - Glättli'),
+    (26, 'GLP - Grossen'),
     (30, 'Mention of Party & Politician'),
 ]
 
