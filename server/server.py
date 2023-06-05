@@ -331,7 +331,7 @@ def edit_post_details(post_id):
     conn.close()
 
     # redirect to the next post that is not processed yet
-    return redirect(url_for('show_post_details', post_id=next_id))
+    return redirect(url_for('show_post_details', post_id=next_id, username=username_filter, referendum=referendum_filter))
 
 
 def construct_where_clause(filters):
